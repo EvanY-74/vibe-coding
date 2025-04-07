@@ -1,13 +1,17 @@
-const keysDown = {};
-const validKeys = new Set([
-    'KeyW', 'KeyA', 'KeyS', 'KeyD', 'ShiftLeft', 'Space',
-    'KeyI', 'KeyJ', 'KeyK', 'KeyL', 'KeyB', 'AltRight'
-]);
+function setupInput(players) {
+    window.addEventListener('keydown', e => {
+        for (const p of players) {
+            if (Object.values(p.keys).includes(e.code)) {
+                p.input[e.code] = true;
+            }
+        }
+    });
 
-window.addEventListener('keydown', e => {
-    if (validKeys.has(e.code)) keysDown[e.code] = true;
-});
-
-window.addEventListener('keyup', e => {
-    if (validKeys.has(e.code)) keysDown[e.code] = false;
-});
+    window.addEventListener('keyup', e => {
+        for (const p of players) {
+            if (Object.values(p.keys).includes(e.code)) {
+                p.input[e.code] = false;
+            }
+        }
+    });
+}
