@@ -3,23 +3,116 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hexagonal Snake Game</title>
+    <title>Snake Game with Triangles</title>
     <style>
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #fafafa;
-        }
-        canvas {
-            border: 1px solid black;
-        }
+        body { margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; background: #f0f0f0; }
+        canvas { background-color: #000; border: 2px solid #fff; }
     </style>
 </head>
 <body>
-    <canvas id="gameCanvas" width="600" height="600"></canvas>
-    <script src="game.js"></script>
+    <canvas id="gameCanvas" width="400" height="400"></canvas>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        const size = 20;
+        let snake = [{ x: 10, y: 10 }];
+        let direction = 'right';
+        let food = generateFood();
+        let score = 0;
+
+        document.addEventListener('keydown', changeDirection);
+
+        function gameLoop() {
+            moveSnake();
+            if (checkCollision()) {
+                alert("Game Over! Score: " + score);
+                resetGame();
+                return;
+            }
+            if (snake[0].x === food.x && snake[0].y === food.y) {
+                snake.push({ x: food.x, y: food.y });
+                score++;
+                food = generateFood();
+            }
+
+            draw();
+            setTimeout(gameLoop, 100);
+        }
+
+        function moveSnake() {
+            const head = { ...snake[0] };
+            if (direction === 'left') head.x -= size;
+            if (direction === 'right') head.x += size;
+            if (direction === 'down') head.y += size;
+
+            snake.unshift(head);
+            snake.pop();
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw the snake
+            for (let i = 0; i < snake.length; i++) {
+                drawTriangle(snake[i].x, snake[i].y, 'green');
+            }
+
+            // Draw food
+            drawTriangle(food.x, food.y, 'red');
+
+            // Draw score
+            ctx.fillStyle = 'white';
+            ctx.font = '20px Arial';
+            ctx.fillText('Score: ' + score, 10, 30);
+        }
+
+        function drawTriangle(x, y, color) {
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+            ctx.lineTo(x + size, y + size);
+            ctx.lineTo(x - size, y + size);
+            ctx.closePath();
+            ctx.fillStyle = color;
+            ctx.fill();
+        }
+
+        function generateFood() {
+            const x = Math.floor(Math.random() * (canvas.width / size)) * size;
+            const y = Math.floor(Math.random() * (canvas.height / size)) * size;
+            return { x, y };
+        }
+
+        function changeDirection(event) {
+            if (event.key === 'ArrowLeft' && direction !== 'right') direction = 'left';
+            if (event.key === 'ArrowRight' && direction !== 'left') direction = 'right';
+            if (event.key === 'ArrowDown' && direction !== 'up') direction = 'down';
+        }
+
+        function checkCollision() {
+            // Check wall collision
+            if (snake[0].x < 0 || snake[0].x >= canvas.width || snake[0].y < 0 || snake[0].y >= canvas.height) {
+                return true;
+            }
+            // Check self-collision
+            for (let i = 1; i < snake.length; i++) {
+                if (snake[0].x === snake[i].x && snake[0].y === snake[i].y) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        function resetGame() {
+            snake = [{ x: 10, y: 10 }];
+            direction = 'right';
+            food = generateFood();
+            score = 0;
+            gameLoop();
+        }
+
+        gameLoop();
+    </script>
 </body>
 </html>
