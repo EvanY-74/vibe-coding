@@ -3,19 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Game</title>
+    <title>Hexagonal Snake Game</title>
     <style>
-        html, body {
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
             margin: 0;
-            overflow: hidden;
+            background-color: #fafafa;
         }
         canvas {
-            display: block;
+            border: 1px solid black;
         }
     </style>
 </head>
 <body>
-    <canvas>Your browser does not support canvas</canvas>
-    <script src="main.js"></script>
+    <canvas id="gameCanvas" width="600" height="600"></canvas>
+    <script src="game.js"></script>
 </body>
 </html>
